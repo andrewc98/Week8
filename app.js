@@ -5,11 +5,20 @@ MongoClient.connect(url, {poolSize:10}, function(err, db) {
     const dbName = 'mydb';
     var products = db.db(dbName);
 
-    dbo.createCollection("products", function(err, res) {
+    // Drop products
+    products.collection("products").drop(function(err, res) {
         if (err) { return console.log(err) }
-        console.log("Collection created!");
+        console.log(res);
         db.close();
     });
+    // Drop products
+
+    // Create products
+    products.createCollection("products", function(err, res) {
+        if (err) { return console.log(err) }
+        console.log("Created");
+    });
+    // Create products
 
     // Insert products
     const products_to_add = [
@@ -27,25 +36,24 @@ MongoClient.connect(url, {poolSize:10}, function(err, db) {
     const one_product = { _id: 1, name: 'Soap', price: 1.5, type: 'Toiletries', description: 'Smells of roses' };
     products.collection("products").deleteOne(one_product, function(err, obj) {
         if (err) { return console.log(err) }
-        console.log("Deleted: " + myquery.name);
-        db.close();
+        console.log("Deleted: " + one_product.name);
     });
     // Delete a product
 
     // Update a product
     const product_to_update = { _id: 2 };
     var update_product = { $set: {name: "Mouthwash", description: "Cleans all the nooks and crannies" } };
-    dbo.collection("products").updateOne(product_to_update, update_product, function(err, res) {
+    products.collection("products").updateOne(product_to_update, update_product, function(err, res) {
         if (err) { return console.log(err) }
         console.log("Updated");
-        db.close();
     });
     // Update a product
 
     // Find products
-    products.collection("products").findOne({}, function(err, result) {
+    products.collection("products").find({}).toArray(function(err, result) {
         if (err) { return console.log(err) }
-        console.log(result.name);
+        console.log(result);
+        db.close();
     });
     // Find products
 });
