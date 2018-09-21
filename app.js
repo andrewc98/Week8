@@ -4,6 +4,14 @@ MongoClient.connect(url, {poolSize:10}, function(err, db) {
     if (err) { return console.log(err) }
     const dbName = 'mydb';
     var products = db.db(dbName);
+
+    dbo.createCollection("products", function(err, res) {
+        if (err) { return console.log(err) }
+        console.log("Collection created!");
+        db.close();
+    });
+
+    // Insert products
     const products_to_add = [
         { _id: 1, name: 'Soap', price: 1.5, type: 'Toiletries', description: 'Smells of roses' },
         { _id: 2, name: 'Toothpaste', price: 3.99, type: 'Toiletries', description: 'Teeth Whitening' },
@@ -11,12 +19,9 @@ MongoClient.connect(url, {poolSize:10}, function(err, db) {
     ];
     products.collection("products").insertMany(products_to_add, function(err, res) {
         if (err) { return console.log(err) }
-        console.log("It worked, this many were inserted: " + res.insertedCount);
+        console.log("Inserted: " + res.insertedCount);
     });
-    products.collection("products").findOne({}, function(err, result) {
-        if (err) { return console.log(err) }
-        console.log(result.name);
-    });
+    // Insert products
 
     // Delete a product
     const one_product = { _id: 1, name: 'Soap', price: 1.5, type: 'Toiletries', description: 'Smells of roses' };
@@ -28,11 +33,19 @@ MongoClient.connect(url, {poolSize:10}, function(err, db) {
     // Delete a product
 
     // Update a product
-    var newvalues = { $set: {name: "Mickey", address: "Canyon 123" } };
-    dbo.collection("customers").updateOne(myquery, newvalues, function(err, res) {
-        if (err) throw err;
-        console.log("1 document updated");
+    const product_to_update = { _id: 2 };
+    var update_product = { $set: {name: "Mouthwash", description: "Cleans all the nooks and crannies" } };
+    dbo.collection("products").updateOne(product_to_update, update_product, function(err, res) {
+        if (err) { return console.log(err) }
+        console.log("Updated");
         db.close();
     });
     // Update a product
+
+    // Find products
+    products.collection("products").findOne({}, function(err, result) {
+        if (err) { return console.log(err) }
+        console.log(result.name);
+    });
+    // Find products
 });
